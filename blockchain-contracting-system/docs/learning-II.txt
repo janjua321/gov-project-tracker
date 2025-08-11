@@ -1,0 +1,33 @@
+Prerequisite Quick Fix (Not Perma):
+while inside the fabric-samples directory, run this command
+to add the bin folder to your PATH for your current session:
+
+export PATH=${PWD}/bin:$PATH
+
+
+Generate Identities:
+this step uses cryptogen to read your crypto-config.yaml file 
+Creates the MSP folders containing the certificates and keys for all your organizations
+
+cryptogen generate --config=./crypto-config.yaml --output="crypto-config"
+
+you will see a new crypto-config folder appear in your directory
+
+
+Create Rules:
+this step uses configtxgen to read your configtx.yaml file and create the necessary network artifacts
+
+mkdir channel-artifacts
+export FABRIC_CFG_PATH=${PWD}
+configtxgen -profile ProjectGenesis -outputBlock ./channel-artifacts/genesis.block -channelID system-channel
+configtxgen -profile Channel1 -outputCreateChannelTx ./channel-artifacts/channel1.tx -channelID channel1
+configtxgen -profile Channel2 -outputCreateChannelTx ./channel-artifacts/channel2.tx -channelID channel2
+configtxgen -profile Channel3 -outputCreateChannelTx ./channel-artifacts/channel3.tx -channelID channel3
+
+your channel-artifacts folder will now contain four files: genesis.block, channel1.tx, channel2.tx, and channel3.tx
+
+
+Launch Network:
+this final step uses Docker Compose to read your docker-compose.yaml file and start all the peer, orderer, and CA containers
+
+docker-compose up -d
