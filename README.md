@@ -4,20 +4,20 @@ A hybrid blockchain system designed for tracking and verifying Indian government
 
 ## 📖 Project Overview
 
-This system models a real-world government infrastructure project involving multiple stakeholders in the Indian railway construction domain. The blockchain network facilitates secure, transparent, and auditable interactions between all parties involved in large-scale infrastructure projects.
+This system models a real-world government infrastructure project involving multiple stakeholders. The blockchain network facilitates secure, transparent, and auditable interactions between all parties involved in large-scale infrastructure projects including highways, bridges, urban development, and other public infrastructure.
 
 ### Key Stakeholders
 
 The system models the following organizations as separate blockchain participants:
 
-- **Employer (DFCCIL)** - Delhi-Ghaziabad-Meerut RRTS Project employer
+- **Employer** - Government or private project owner/client
 - **Engineer (PMC)** - Project Management Consultant
 - **Contractor** - Main construction contractor
 - **Designer** - Infrastructure design consultant
 - **SubContractor** - Secondary contractors
 - **Supplier** - Material and equipment suppliers
 - **Ministry of Railways (MoR)** - Government oversight body
-- **Financial Consortia (JICA/WB)** - International funding bodies (Japan International Cooperation Agency / World Bank)
+- **Financial Consortia** - International funding bodies and financial institutions
 
 ### Multi-Channel Architecture
 

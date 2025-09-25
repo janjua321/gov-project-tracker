@@ -1,0 +1,104 @@
+# Summary: Hyperledger Fabric Chaincode Commit Timeout Resolution
+
+## **Problem Statement**
+User experiencing **"timeout error during chaincode commit"** in Hyperledger Fabric 2.5 network with 7 peer organizations (Employer, Engineer, Contractor, Designer, Subcontractor, Supplier, MoR, FinConsortia).
+
+## **Root Cause Identified**
+**Missing `OrdererEndpoints` configuration in `configtx.yaml`**
+
+The OrdererOrg definition in `configtx.yaml` was missing the crucial `OrdererEndpoints` field:
+
+```yaml
+# BEFORE (causing timeouts):
+- &OrdererOrg
+  Name: OrdererOrg
+  ID: OrdererMSP
+  MSPDir: crypto-config/ordererOrganizations/example.com/msp
+  Policies: [...]
+
+# AFTER (fixes timeouts):
+- &OrdererOrg
+  Name: OrdererOrg
+  ID: OrdererMSP
+  MSPDir: crypto-config/ordererOrganizations/example.com/msp
+  Policies: [...]
+  OrdererEndpoints:
+    - orderer.example.com:7050
+```
+
+## **Symptoms Observed**
+- `peer lifecycle chaincode approveformyorg` timeouts
+- `peer lifecycle chaincode commit` timeouts  
+- Error: `"no endpoints currently defined channel=channelname"`
+- Error: `"context deadline exceeded"`
+- Error: `"rpc error: code = DeadlineExceeded"`
+
+## **Diagnostic Steps Taken**
+1. ✅ Verified all containers running (`docker ps`)
+2. ✅ Checked network connectivity between peers/orderer
+3. ✅ Confirmed chaincode package installed on peers
+4. ✅ Tested channel creation (successful)
+5. ✅ Identified missing orderer endpoints as root cause
+
+## **Solution Applied**
+1. **Edit `configtx.yaml`**: Add `OrdererEndpoints` field to OrdererOrg
+2. **Test with new channel**: Created `workingchannel` with fixed configuration
+3. **Verified fix**: Chaincode approval worked without timeout
+
+## **Final Fix**
+```yaml
+# In configtx.yaml, add this to OrdererOrg:
+OrdererEndpoints:
+  - orderer.example.com:7050
+```
+
+## **Key Technical Details**
+- **Fabric Version**: 2.5
+- **Network Setup**: Docker Compose with 17 containers
+- **Consensus**: etcdraft
+- **TLS**: Enabled
+- **Docker Network**: `network_project-network`
+
+## **Validation Commands**
+```bash
+# Test orderer endpoints after fix:
+peer lifecycle chaincode approveformyorg \
+  --channelID workingchannel \
+  --name project-management \
+  --version 1.0 \
+  --package-id [PACKAGE_ID] \
+  --sequence 1 \
+  -o orderer.example.com:7050 \
+  --tls --cafile [CA_FILE]
+```
+
+## **Lesson Learned**
+The error **"timeout error during chaincode commit"** in Hyperledger Fabric **almost always indicates network communication failure between peers and ordering service**, specifically missing orderer endpoint configuration in channel genesis.
+
+**Status**: ✅ **RESOLVED** - Chaincode lifecycle operations now work without timeouts after adding OrdererEndpoints to configtx.yaml.
+
+## **Date Resolved**
+August 23, 2025
+
+## **Files Modified**
+- `configtx.yaml` - Added OrdererEndpoints configuration
+- Created test channels to validate fix
+
+## **Next Steps for Future Issues**
+1. Always check `configtx.yaml` for missing OrdererEndpoints
+2. Test with new channel creation after configuration changes
+3. Use container-based fabric-tools commands for proper network isolation
+4. Monitor orderer and peer logs for communication errors
+
+## **Command Reference for Testing**
+```bash
+# Check if orderer endpoints are defined in channel
+peer channel getinfo -c [CHANNEL_NAME]
+
+# Create new channel with proper config
+configtxgen -profile Channel1 -outputCreateChannelTx channel.tx -channelID newchannel
+peer channel create -o orderer.example.com:7050 -c newchannel -f channel.tx
+
+# Test chaincode lifecycle without timeouts
+peer lifecycle chaincode approveformyorg --channelID newchannel [other-params]
+```

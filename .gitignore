@@ -9,49 +9,18 @@ __pycache__/
 *.pyd
 *.egg-info/
 
-# Hyperledger Fabric artifacts
-**/crypto-config/
-**/channel-artifacts/
-*.block
-*.tx
-fabric-samples/
-organizations/
-wallet/
-
-# Fabric CA artifacts
-fabric-ca/
-fabric-ca-client/
-
-# Docker volumes and temp files
-.tmp/
-.cache/
+# Fabric artifacts
+fabric-network/organizations/
+fabric-network/test-network/crypto-config/
+fabric-network/test-network/fabric-ca/
+fabric-network/test-network/*.block
+fabric-network/test-network/*.tx
 
 # IPFS temp files
 .ipfs/
 
 # Logs
 *.log
-logs/
 
 # VSCode
 .vscode/
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# IDE files
-*.swp
-*.swo
-*~
-
-# Private keys (security precaution)
-*_sk
-*.key
-*.pem
-!**/*-cert.pem

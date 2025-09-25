@@ -23,6 +23,8 @@ Organizations:
       Admins:
         Type: Signature
         Rule: "OR('OrdererMSP.admin')"
+    OrdererEndpoints:
+      - orderer.example.com:7050
 
   - &Employer
     Name: EmployerMSP
@@ -46,13 +48,37 @@ Organizations:
     Name: EngineerMSP
     ID: EngineerMSP
     MSPDir: crypto-config/peerOrganizations/engineer.example.com/msp
-    Policies: *DefaultPolicies
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('EngineerMSP.admin', 'EngineerMSP.peer', 'EngineerMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('EngineerMSP.admin', 'EngineerMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('EngineerMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('EngineerMSP.peer')"
 
   - &Contractor
     Name: ContractorMSP
     ID: ContractorMSP
     MSPDir: crypto-config/peerOrganizations/contractor.example.com/msp
-    Policies: *DefaultPolicies
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('ContractorMSP.admin', 'ContractorMSP.peer', 'ContractorMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('ContractorMSP.admin', 'ContractorMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('ContractorMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('ContractorMSP.peer')"
 
   - &Designer
     Name: DesignerMSP
@@ -156,67 +182,28 @@ Channel: &ChannelDefaults
     <<: *ChannelCapabilities
 
 Profiles:
-  # profile for generating the Genesis Block for the Ordering Service
-  ProjectGenesis:
+  # Direct channel creation profile - no consortium needed
+  # Uses the test-network approach with both Orderer and Application sections
+  DirectChannel:
     <<: *ChannelDefaults
     Orderer:
       <<: *OrdererDefaults
+      OrdererType: etcdraft
+      EtcdRaft:
+        Consenters:
+          - Host: orderer.example.com
+            Port: 7050
+            ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+            ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
       Organizations:
         - *OrdererOrg
       Capabilities:
         <<: *OrdererCapabilities
-    Consortiums:
-      ProjectConsortium:
-        Organizations:
-          - *Employer
-          - *Engineer
-          - *Contractor
-          - *Designer
-          - *SubContractor
-          - *Supplier
-          - *MoR
-          - *FinConsortia
-
-  # profile for generating the C1 Channel Transaction
-  # as per the paper, this channel involves the employer, engineer, and contractor
-  Channel1:
-    Consortium: ProjectConsortium
-    <<: *ChannelDefaults
     Application:
       <<: *ApplicationDefaults
       Organizations:
         - *Employer
         - *Engineer
         - *Contractor
-      Capabilities:
-        <<: *ApplicationCapabilities
-
-  # profile for generating the C2 Channel Transaction
-  # this channel is for the contractor's consortium
-  Channel2:
-    Consortium: ProjectConsortium
-    <<: *ChannelDefaults
-    Application:
-      <<: *ApplicationDefaults
-      Organizations:
-        - *Contractor
-        - *SubContractor
-        - *Engineer
-        - *Designer
-        - *Supplier
-      Capabilities:
-        <<: *ApplicationCapabilities
-
-  # profile for generating the C3 Channel Transaction
-  # this channel is for the employer, MOR, and financial bodies
-  Channel3:
-    Consortium: ProjectConsortium
-    <<: *ChannelDefaults
-    Application:
-      <<: *ApplicationDefaults
-      Organizations:
-        - *Employer
-        - *MoR
-        - *FinConsortia
       Capabilities:
         <<: *ApplicationCapabilities
