@@ -182,8 +182,90 @@ Channel: &ChannelDefaults
     <<: *ChannelCapabilities
 
 Profiles:
-  # Direct channel creation profile - no consortium needed
-  # Uses the test-network approach with both Orderer and Application sections
+  # Channel1: Primary project execution channel
+  # Participants: Employer, Engineer, Contractor
+  # Purpose: Main project coordination and milestone tracking
+  Channel1Profile:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      OrdererType: etcdraft
+      EtcdRaft:
+        Consenters:
+          - Host: orderer.example.com
+            Port: 7050
+            ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+            ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+      Organizations:
+        - *OrdererOrg
+      Capabilities:
+        <<: *OrdererCapabilities
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *Employer
+        - *Engineer
+        - *Contractor
+      Capabilities:
+        <<: *ApplicationCapabilities
+
+  # Channel2: Contractor consortium channel
+  # Participants: Contractor, SubContractor, Engineer, Designer, Supplier
+  # Purpose: Supply chain and sub-contracting coordination
+  Channel2Profile:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      OrdererType: etcdraft
+      EtcdRaft:
+        Consenters:
+          - Host: orderer.example.com
+            Port: 7050
+            ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+            ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+      Organizations:
+        - *OrdererOrg
+      Capabilities:
+        <<: *OrdererCapabilities
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *Contractor
+        - *SubContractor
+        - *Engineer
+        - *Designer
+        - *Supplier
+      Capabilities:
+        <<: *ApplicationCapabilities
+
+  # Channel3: Financial oversight channel
+  # Participants: Employer, MoR, FinConsortia
+  # Purpose: Financial monitoring and compliance
+  Channel3Profile:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      OrdererType: etcdraft
+      EtcdRaft:
+        Consenters:
+          - Host: orderer.example.com
+            Port: 7050
+            ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+            ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+      Organizations:
+        - *OrdererOrg
+      Capabilities:
+        <<: *OrdererCapabilities
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *Employer
+        - *MoR
+        - *FinConsortia
+      Capabilities:
+        <<: *ApplicationCapabilities
+
+  # Legacy DirectChannel profile for backward compatibility
   DirectChannel:
     <<: *ChannelDefaults
     Orderer:
