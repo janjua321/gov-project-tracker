@@ -1,0 +1,18 @@
+{
+  "name": "project-management",
+  "version": "1.0.0",
+  "description": "Government Infrastructure Project Management Chaincode",
+  "main": "index.js",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "scripts": {
+    "start": "fabric-chaincode-node start"
+  },
+  "dependencies": {
+    "fabric-contract-api": "^2.5.0",
+    "fabric-shim": "^2.5.0"
+  },
+  "author": "Government Project Tracker",
+  "license": "Apache-2.0"
+}
