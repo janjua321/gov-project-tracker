@@ -1,0 +1,119 @@
+{
+  "name": "project-network",
+  "version": "1.0.0",
+  "client": {
+    "organization": "Employer",
+    "connection": {
+      "timeout": {
+        "peer": {
+          "endorser": "300"
+        },
+        "orderer": "300"
+      }
+    }
+  },
+  "organizations": {
+    "Employer": {
+      "mspid": "EmployerMSP",
+      "peers": [
+        "peer0.employer.example.com"
+      ],
+      "certificateAuthorities": [
+        "ca.employer.example.com"
+      ]
+    },
+    "Engineer": {
+      "mspid": "EngineerMSP",
+      "peers": [
+        "peer0.engineer.example.com"
+      ]
+    },
+    "Contractor": {
+      "mspid": "ContractorMSP",
+      "peers": [
+        "peer0.contractor.example.com"
+      ]
+    }
+  },
+  "peers": {
+    "peer0.employer.example.com": {
+      "url": "grpcs://localhost:7051",
+      "tlsCACerts": {
+        "path": "../../blockchain-contracting-system/network/crypto-config/peerOrganizations/employer.example.com/peers/peer0.employer.example.com/tls/ca.crt"
+      },
+      "grpcOptions": {
+        "ssl-target-name-override": "peer0.employer.example.com",
+        "hostnameOverride": "peer0.employer.example.com"
+      }
+    },
+    "peer0.engineer.example.com": {
+      "url": "grpcs://localhost:8051",
+      "tlsCACerts": {
+        "path": "../../blockchain-contracting-system/network/crypto-config/peerOrganizations/engineer.example.com/peers/peer0.engineer.example.com/tls/ca.crt"
+      },
+      "grpcOptions": {
+        "ssl-target-name-override": "peer0.engineer.example.com",
+        "hostnameOverride": "peer0.engineer.example.com"
+      }
+    },
+    "peer0.contractor.example.com": {
+      "url": "grpcs://localhost:9051",
+      "tlsCACerts": {
+        "path": "../../blockchain-contracting-system/network/crypto-config/peerOrganizations/contractor.example.com/peers/peer0.contractor.example.com/tls/ca.crt"
+      },
+      "grpcOptions": {
+        "ssl-target-name-override": "peer0.contractor.example.com",
+        "hostnameOverride": "peer0.contractor.example.com"
+      }
+    }
+  },
+  "orderers": {
+    "orderer.example.com": {
+      "url": "grpcs://localhost:7050",
+      "tlsCACerts": {
+        "path": "../../blockchain-contracting-system/network/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt"
+      },
+      "grpcOptions": {
+        "ssl-target-name-override": "orderer.example.com",
+        "hostnameOverride": "orderer.example.com"
+      }
+    }
+  },
+  "channels": {
+    "channel1": {
+      "orderers": ["orderer.example.com"],
+      "peers": {
+        "peer0.employer.example.com": {
+          "endorsingPeer": true,
+          "chaincodeQuery": true,
+          "ledgerQuery": true,
+          "eventSource": true
+        },
+        "peer0.engineer.example.com": {
+          "endorsingPeer": true,
+          "chaincodeQuery": true,
+          "ledgerQuery": true,
+          "eventSource": true
+        },
+        "peer0.contractor.example.com": {
+          "endorsingPeer": true,
+          "chaincodeQuery": true,
+          "ledgerQuery": true,
+          "eventSource": true
+        }
+      }
+    }
+  },
+  "certificateAuthorities": {
+    "ca.employer.example.com": {
+      "url": "https://localhost:7054",
+      "caName": "ca-employer",
+      "tlsCACerts": {
+        "path": "../../blockchain-contracting-system/network/crypto-config/peerOrganizations/employer.example.com/ca/ca.employer.example.com-cert.pem"
+      },
+      "httpOptions": {
+        "verify": false
+      }
+    }
+  }
+}

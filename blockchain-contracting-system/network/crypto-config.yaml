@@ -1,0 +1,90 @@
+# ---------------------------------------------------------------------------
+# "crypto-config.yaml"
+# ---------------------------------------------------------------------------
+#
+# this file defines the cryptographic material for all the organizations
+# in our network. tt is used by the "cryptogen" tool to generate the MSP
+# directories for each organization.
+#
+# ---------------------------------------------------------------------------
+
+# the list of ordering organizations
+OrdererOrgs:
+  - Name: Orderer
+    Domain: example.com
+    Specs:
+      - Hostname: orderer
+
+# the list of peer organizations, based on the stakeholders
+PeerOrgs:
+  # organization 1: employer (DFCCIL)
+  - Name: Employer
+    Domain: employer.example.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1 # one peer for the employer
+    Users:
+      Count: 1
+
+  # organization 2: engineer (PMC)
+  - Name: Engineer
+    Domain: engineer.example.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1 # one peer for the engineer
+    Users:
+      Count: 1
+  
+  # organization 3: contractor
+  - Name: Contractor
+    Domain: contractor.example.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1 # one peer for the contractor
+    Users:
+      Count: 1
+
+  # organization 4: designer
+  - Name: Designer
+    Domain: designer.example.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1 # one peer for the designer
+    Users:
+      Count: 1
+
+  # organization 5: Sub Contractor
+  - Name: SubContractor
+    Domain: subcontractor.example.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1 # one peer for the Sub Contractor
+    Users:
+      Count: 1
+
+  # organization 6: Supplier
+  - Name: Supplier
+    Domain: supplier.example.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1 # one peer for the supplier
+    Users:
+      Count: 1
+
+  # organization 7: Ministry of Railways (MoR)
+  - Name: MoR
+    Domain: mor.example.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1 # one peer for the ministry
+    Users:
+      Count: 1
+
+  # organization 8: Financial Consortia (JICA/WB)
+  - Name: FinConsortia
+    Domain: finconsortia.example.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1 # one peer for the Financial Consortia
+    Users:
+      Count: 1

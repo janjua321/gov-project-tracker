@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🇮🇳 Government Project Tracker - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+            white-space: nowrap;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .role-selection {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .role-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 3px solid transparent;
+        }
+
+        .role-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .role-card.selected {
+            border-color: #4CAF50;
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .role-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .role-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .role-desc {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .message.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .message.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .demo-note {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .demo-note strong {
+            color: #333;
+        }
+
+        .public-link {
+            margin-top: 20px;
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 8px;
+        }
+
+        .public-link a {
+            color: #1976d2;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s;
+        }
+
+        .public-link a:hover {
+            color: #0d47a1;
+        }
+
+        .login-form {
+            display: none;
+        }
+
+        .login-form.show {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .credentials-hint {
+            background: #f0f7ff;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #1976d2;
+            margin-top: 15px;
+            line-height: 1.6;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="header">
+            <h1>Government Project Tracker</h1>
+            <p class="subtitle">Blockchain-Based Infrastructure Management</p>
+        </div>
+
+        <div class="role-selection" id="roleSelection">
+            <div class="role-card" onclick="selectRole('employer')">
+                <div class="role-icon">🏛️</div>
+                <div class="role-title">EMPLOYER</div>
+                <div class="role-desc">government authority</div>
+            </div>
+
+            <div class="role-card" onclick="selectRole('contractor')">
+                <div class="role-icon">🏗️</div>
+                <div class="role-title">CONTRACTOR</div>
+                <div class="role-desc">construction company</div>
+            </div>
+        </div>
+
+        <!-- Login Form (Hidden Initially) -->
+        <div class="login-form" id="loginForm">
+            <form onsubmit="login(event)">
+                <div class="form-group">
+                    <label for="username">USERNAME</label>
+                    <input type="text" id="username" required placeholder="enter your username" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="password">PASSWORD</label>
+                    <input type="password" id="password" required placeholder="enter your password" autocomplete="current-password">
+                </div>
+                <button type="submit" class="login-btn">
+                    LOGIN
+                </button>
+            </form>
+            
+            <div class="credentials-hint">
+                <strong>Demo Credentials</strong><br>
+                <strong>EMPLOYER:</strong> employer / employer123<br>
+                <strong>CONTRACTOR:</strong> contractor / contractor123
+            </div>
+            
+            <button class="login-btn" onclick="backToRoleSelection()" style="background: #95a5a6; margin-top: 10px;">
+                ← BACK
+            </button>
+        </div>
+
+        <div id="message"></div>
+
+        <div class="demo-note">
+            <strong>Secure System</strong><br>
+            select your role and login with credentials
+        </div>
+
+        <div class="public-link">
+            <a href="public-tracker.html">
+                🔍 Public Project Tracker
+                <span style="font-size: 12px; opacity: 0.8;">→</span>
+            </a>
+            <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                track any project without logging in
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedRole = null;
+
+        function selectRole(role) {
+            selectedRole = role;
+            
+            // Hide role selection, show login form
+            document.getElementById('roleSelection').style.display = 'none';
+            document.getElementById('loginForm').classList.add('show');
+            document.getElementById('username').focus();
+        }
+
+        function backToRoleSelection() {
+            document.getElementById('roleSelection').style.display = 'grid';
+            document.getElementById('loginForm').classList.remove('show');
+            document.getElementById('message').innerHTML = '';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            selectedRole = null;
+        }
+
+        async function login(event) {
+            event.preventDefault();
+            
+            if (!selectedRole) return;
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            
+            messageDiv.className = 'message';
+            messageDiv.textContent = `verifying credentials...`;
+
+            try {
+                const organization = selectedRole === 'employer' ? 'Employer' : 'Contractor';
+                
+                const response = await fetch('http://localhost:3000/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        organization,
+                        username,
+                        password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || 'invalid credentials');
+                }
+
+                // Store session ID and user info
+                localStorage.setItem('sessionId', data.sessionId);
+                localStorage.setItem('userOrg', organization);
+                localStorage.setItem('userRole', selectedRole);
+
+                messageDiv.className = 'message success';
+                messageDiv.textContent = `logged in as ${organization}`;
+
+                // Redirect to appropriate dashboard
+                setTimeout(() => {
+                    if (selectedRole === 'employer') {
+                        window.location.href = '/employer-dashboard.html';
+                    } else {
+                        window.location.href = '/contractor-dashboard.html';
+                    }
+                }, 500);
+
+            } catch (error) {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = `❌ ${error.message}`;
+                console.error('login error:', error);
+            }
+        }
+
+        // Check if already logged in
+        window.addEventListener('load', async () => {
+            const sessionId = localStorage.getItem('sessionId');
+            const userRole = localStorage.getItem('userRole');
+            
+            if (sessionId) {
+                // Verify session is still valid
+                try {
+                    const response = await fetch('http://localhost:3000/api/auth/status', {
+                        headers: {
+                            'X-Session-Id': sessionId
+                        }
+                    });
+                    const data = await response.json();
+                    
+                    if (data.authenticated) {
+                        // Redirect to dashboard
+                        if (userRole === 'employer') {
+                            window.location.href = '/employer-dashboard.html';
+                        } else {
+                            window.location.href = '/contractor-dashboard.html';
+                        }
+                    }
+                } catch (error) {
+                    console.log('session expired or invalid');
+                    localStorage.clear();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

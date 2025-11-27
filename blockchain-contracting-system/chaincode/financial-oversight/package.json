@@ -1,0 +1,17 @@
+{
+  "name": "financial-oversight",
+  "version": "1.0.0",
+  "description": "Financial Oversight Chaincode for Channel 3",
+  "main": "index.js",
+  "scripts": {
+    "start": "fabric-chaincode-node start"
+  },
+  "engines": {
+    "node": ">=18",
+    "npm": ">=8"
+  },
+  "dependencies": {
+    "fabric-contract-api": "^2.5.0",
+    "fabric-shim": "^2.5.0"
+  }
+}

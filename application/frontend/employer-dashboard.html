@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Dashboard - Government Project Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .dashboard-header {
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: scale(1.02);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .message.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .message.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .projects-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .project-card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .project-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .project-card h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .project-card p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .project-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge.created {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge.in-progress {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .badge.completed {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        @media (max-width: 968px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            🏛️ Employer Dashboard
+        </div>
+        <div class="navbar-user">
+            <span class="user-badge">Government Authority</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>Welcome, Government Authority</h1>
+            <p>Create and manage infrastructure projects on the blockchain</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Create Project Form -->
+            <div class="card">
+                <h2>📝 Create New Project</h2>
+                <form id="createProjectForm">
+                    <div class="form-group">
+                        <label for="projectId">Project ID *</label>
+                        <input type="text" id="projectId" placeholder="e.g., PROJ003" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Project Name *</label>
+                        <input type="text" id="name" placeholder="e.g., Mumbai Coastal Road" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description *</label>
+                        <textarea id="description" placeholder="Detailed project description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="totalValue">Total Value (₹) *</label>
+                        <input type="number" id="totalValue" placeholder="e.g., 15000000000" required>
+                    </div>
+                    <button type="submit" class="btn" id="submitBtn">
+                        Create Project on Blockchain
+                    </button>
+                    <div id="createMessage"></div>
+                </form>
+            </div>
+
+            <!-- Projects List -->
+            <div class="card">
+                <h2>🏗️ All Projects</h2>
+                <div id="projectsList">
+                    <div class="loading">Loading projects from blockchain...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+
+        // Check authentication - MUST be logged in as Employer
+        window.addEventListener('load', async () => {
+            const userRole = localStorage.getItem('userRole');
+            const sessionId = localStorage.getItem('sessionId');
+            
+            if (!sessionId) {
+                alert('❌ Please login first');
+                localStorage.clear();
+                window.location.href = '/';
+                return;
+            }
+            
+            // Verify session is still valid AND user is actually an Employer
+            try {
+                const response = await fetch('http://localhost:3000/api/auth/status', {
+                    headers: {
+                        'X-Session-Id': sessionId
+                    }
+                });
+                const data = await response.json();
+                
+                if (!data.authenticated || data.user.organization !== 'Employer') {
+                    alert('❌ Access Denied: This dashboard is only for Employers');
+                    localStorage.clear();
+                    window.location.href = '/';
+                    return;
+                }
+                
+                // Update UI with user info
+                console.log('✅ Logged in as:', data.user.organization);
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                alert('❌ Session expired. Please login again.');
+                localStorage.clear();
+                window.location.href = '/';
+                return;
+            }
+            
+            loadAllProjects();
+        });
+
+        // Logout function
+        async function logout() {
+            const sessionId = localStorage.getItem('sessionId');
+            
+            try {
+                await fetch('http://localhost:3000/api/auth/logout', {
+                    method: 'POST',
+                    headers: {
+                        'X-Session-Id': sessionId
+                    }
+                });
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+            
+            localStorage.clear();
+            window.location.href = '/';
+        }
+
+        // Create Project
+        document.getElementById('createProjectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const messageDiv = document.getElementById('createMessage');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating on Blockchain...';
+            messageDiv.innerHTML = '';
+
+            const projectData = {
+                projectId: document.getElementById('projectId').value,
+                name: document.getElementById('name').value,
+                description: document.getElementById('description').value,
+                totalValue: parseInt(document.getElementById('totalValue').value)
+            };
+
+            try {
+                const sessionId = localStorage.getItem('sessionId');
+                
+                const response = await fetch(`${API_URL}/projects`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Session-Id': sessionId
+                    },
+                    body: JSON.stringify(projectData)
+                });
+
+                // Better error handling for JSON parsing
+                const responseText = await response.text();
+                console.log('Server response:', responseText);
+                
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.error('JSON parse error:', parseError);
+                    throw new Error(`Invalid server response: ${responseText.substring(0, 100)}`);
+                }
+
+                if (data.success) {
+                    messageDiv.className = 'message success';
+                    messageDiv.textContent = `✅ ${data.message}`;
+                    document.getElementById('createProjectForm').reset();
+                    setTimeout(() => loadAllProjects(), 1000);
+                } else {
+                    messageDiv.className = 'message error';
+                    messageDiv.textContent = `❌ ${data.message}`;
+                }
+            } catch (error) {
+                console.error('Full error:', error);
+                messageDiv.className = 'message error';
+                messageDiv.textContent = `❌ Error: ${error.message}`;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Project on Blockchain';
+            }
+        });
+
+        // Load All Projects
+        async function loadAllProjects() {
+            const projectsList = document.getElementById('projectsList');
+            projectsList.innerHTML = '<div class="loading">Loading projects from blockchain...</div>';
+
+            try {
+                const response = await fetch(`${API_URL}/projects`);
+                const data = await response.json();
+
+                if (data.success && data.data.projects && data.data.projects.length > 0) {
+                    projectsList.innerHTML = data.data.projects.map(item => {
+                        const project = item.Record;
+                        return `
+                        <div class="project-card">
+                            <h3>${project.name}</h3>
+                            <p><strong>Project ID:</strong> ${project.projectId}</p>
+                            <p><strong>Description:</strong> ${project.description}</p>
+                            <div class="project-meta">
+                                <div class="meta-item">
+                                    <span class="badge ${project.status.toLowerCase().replace('_', '-')}">${project.status}</span>
+                                </div>
+                                <div class="meta-item">
+                                    💰 <strong>₹${project.totalValue.toLocaleString('en-IN')}</strong>
+                                </div>
+                                <div class="meta-item">
+                                    📅 ${new Date(project.createdAt).toLocaleDateString('en-IN')}
+                                </div>
+                            </div>
+                        </div>
+                    `}).join('');
+                } else {
+                    projectsList.innerHTML = '<div class="loading">No projects found on blockchain</div>';
+                }
+            } catch (error) {
+                projectsList.innerHTML = `<div class="message error">❌ Error loading projects: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

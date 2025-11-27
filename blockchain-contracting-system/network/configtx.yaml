@@ -1,0 +1,291 @@
+# ---------------------------------------------------------------------------
+# "configtx.yaml"
+# ---------------------------------------------------------------------------
+#
+# This file defines the organizations and the profiles for the consortium.
+# It is used by the "configtxgen" tool to generate the genesis block
+# and channel configuration transactions.
+#
+# ---------------------------------------------------------------------------
+
+Organizations:
+  - &OrdererOrg
+    Name: OrdererOrg
+    ID: OrdererMSP
+    MSPDir: crypto-config/ordererOrganizations/example.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('OrdererMSP.admin')"
+    OrdererEndpoints:
+      - orderer.example.com:7050
+
+  - &Employer
+    Name: EmployerMSP
+    ID: EmployerMSP
+    MSPDir: crypto-config/peerOrganizations/employer.example.com/msp
+    Policies: &DefaultPolicies
+      Readers:
+        Type: Signature
+        Rule: "OR('EmployerMSP.admin', 'EmployerMSP.peer', 'EmployerMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('EmployerMSP.admin', 'EmployerMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('EmployerMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('EmployerMSP.peer')"
+
+  - &Engineer
+    Name: EngineerMSP
+    ID: EngineerMSP
+    MSPDir: crypto-config/peerOrganizations/engineer.example.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('EngineerMSP.admin', 'EngineerMSP.peer', 'EngineerMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('EngineerMSP.admin', 'EngineerMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('EngineerMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('EngineerMSP.peer')"
+
+  - &Contractor
+    Name: ContractorMSP
+    ID: ContractorMSP
+    MSPDir: crypto-config/peerOrganizations/contractor.example.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('ContractorMSP.admin', 'ContractorMSP.peer', 'ContractorMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('ContractorMSP.admin', 'ContractorMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('ContractorMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('ContractorMSP.peer')"
+
+  - &Designer
+    Name: DesignerMSP
+    ID: DesignerMSP
+    MSPDir: crypto-config/peerOrganizations/designer.example.com/msp
+    Policies: *DefaultPolicies
+
+  - &SubContractor
+    Name: SubContractorMSP
+    ID: SubContractorMSP
+    MSPDir: crypto-config/peerOrganizations/subcontractor.example.com/msp
+    Policies: *DefaultPolicies
+
+  - &Supplier
+    Name: SupplierMSP
+    ID: SupplierMSP
+    MSPDir: crypto-config/peerOrganizations/supplier.example.com/msp
+    Policies: *DefaultPolicies
+
+  - &MoR
+    Name: MoRMSP
+    ID: MoRMSP
+    MSPDir: crypto-config/peerOrganizations/mor.example.com/msp
+    Policies: *DefaultPolicies
+
+  - &FinConsortia
+    Name: FinConsortiaMSP
+    ID: FinConsortiaMSP
+    MSPDir: crypto-config/peerOrganizations/finconsortia.example.com/msp
+    Policies: *DefaultPolicies
+
+Capabilities:
+  Channel: &ChannelCapabilities
+    V2_0: true
+  Orderer: &OrdererCapabilities
+    V2_0: true
+  Application: &ApplicationCapabilities
+    V2_5: true
+
+Application: &ApplicationDefaults
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    LifecycleEndorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+    Endorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+  Capabilities:
+    <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+  OrdererType: etcdraft
+  EtcdRaft:
+    Consenters:
+      - Host: orderer.example.com
+        Port: 7050
+        ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+        ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+  BatchTimeout: 2s
+  BatchSize:
+    MaxMessageCount: 10
+    AbsoluteMaxBytes: 99 MB
+    PreferredMaxBytes: 512 KB
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+
+Channel: &ChannelDefaults
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+  Capabilities:
+    <<: *ChannelCapabilities
+
+Profiles:
+  # Channel1: Primary project execution channel
+  # Participants: Employer, Engineer, Contractor
+  # Purpose: Main project coordination and milestone tracking
+  Channel1Profile:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      OrdererType: etcdraft
+      EtcdRaft:
+        Consenters:
+          - Host: orderer.example.com
+            Port: 7050
+            ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+            ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+      Organizations:
+        - *OrdererOrg
+      Capabilities:
+        <<: *OrdererCapabilities
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *Employer
+        - *Engineer
+        - *Contractor
+      Capabilities:
+        <<: *ApplicationCapabilities
+
+  # Channel2: Contractor consortium channel
+  # Participants: Contractor, SubContractor, Engineer, Designer, Supplier
+  # Purpose: Supply chain and sub-contracting coordination
+  Channel2Profile:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      OrdererType: etcdraft
+      EtcdRaft:
+        Consenters:
+          - Host: orderer.example.com
+            Port: 7050
+            ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+            ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+      Organizations:
+        - *OrdererOrg
+      Capabilities:
+        <<: *OrdererCapabilities
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *Contractor
+        - *SubContractor
+        - *Engineer
+        - *Designer
+        - *Supplier
+      Capabilities:
+        <<: *ApplicationCapabilities
+
+  # Channel3: Financial oversight channel
+  # Participants: Employer, MoR, FinConsortia
+  # Purpose: Financial monitoring and compliance
+  Channel3Profile:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      OrdererType: etcdraft
+      EtcdRaft:
+        Consenters:
+          - Host: orderer.example.com
+            Port: 7050
+            ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+            ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+      Organizations:
+        - *OrdererOrg
+      Capabilities:
+        <<: *OrdererCapabilities
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *Employer
+        - *MoR
+        - *FinConsortia
+      Capabilities:
+        <<: *ApplicationCapabilities
+
+  # Legacy DirectChannel profile for backward compatibility
+  DirectChannel:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      OrdererType: etcdraft
+      EtcdRaft:
+        Consenters:
+          - Host: orderer.example.com
+            Port: 7050
+            ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+            ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+      Organizations:
+        - *OrdererOrg
+      Capabilities:
+        <<: *OrdererCapabilities
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *Employer
+        - *Engineer
+        - *Contractor
+      Capabilities:
+        <<: *ApplicationCapabilities

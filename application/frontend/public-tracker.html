@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🇮🇳 Public Project Tracker - Government Infrastructure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #1e3c72;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .search-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #1e3c72;
+        }
+
+        .search-box button {
+            padding: 15px 40px;
+            font-size: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .search-box button:hover {
+            transform: translateY(-2px);
+        }
+
+        .search-box button:active {
+            transform: translateY(0);
+        }
+
+        .info-box {
+            background: #f0f7ff;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2a5298;
+            color: #1e3c72;
+            font-size: 14px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1e3c72;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            display: none;
+        }
+
+        .results-section.show {
+            display: block;
+        }
+
+        .project-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .project-header {
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .project-header h2 {
+            color: #1e3c72;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .project-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .meta-label {
+            font-weight: bold;
+            color: #666;
+        }
+
+        .meta-value {
+            color: #333;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .status-CREATED { background: #e3f2fd; color: #1976d2; }
+        .status-INITIATED { background: #fff3e0; color: #f57c00; }
+        .status-IN_PROGRESS { background: #fff9c4; color: #f9a825; }
+        .status-ACCEPTED { background: #e8f5e9; color: #388e3c; }
+        .status-COMPLETED { background: #e1f5fe; color: #0277bd; }
+
+        .timeline-section {
+            margin-top: 30px;
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .timeline-header h3 {
+            color: #1e3c72;
+            font-size: 22px;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -44px;
+            top: 25px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            border: 4px solid #667eea;
+        }
+
+        .timeline-timestamp {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .timeline-action {
+            font-weight: bold;
+            color: #1e3c72;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .timeline-actor {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .timeline-details {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .timeline-details pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .channel-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .channel-1 { background: #e3f2fd; color: #1976d2; }
+        .channel-2 { background: #f3e5f5; color: #7b1fa2; }
+        .channel-3 { background: #e8f5e9; color: #388e3c; }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #1e3c72;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #667eea;
+        }
+
+        .blockchain-verified {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .blockchain-verified::before {
+            content: '';
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Public Project Tracker</h1>
+            <div class="blockchain-verified">Powered By Hyperledger Fabric</div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <h2 style="color: #1e3c72; margin-bottom: 20px;">Track Any Government Project</h2>
+            <div class="search-box">
+                <input 
+                    type="text" 
+                    id="projectIdInput" 
+                    placeholder="Enter Project ID (e.g., INFRA_001, PROJ001)"
+                    onkeypress="if(event.key === 'Enter') searchProject()"
+                />
+                <button onclick="searchProject()">Track Project</button>
+            </div>
+            <div class="info-box">
+                <strong>Public Transparency:</strong> all project data is stored on an immutable blockchain ledger. 
+                enter any project ID to view its complete history, transactions, and current status.
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="color: white; font-size: 18px;">fetching blockchain data...</p>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage"></div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="results">
+            <!-- Project Card -->
+            <div class="project-card">
+                <div class="project-header">
+                    <h2 id="projectName">Project Name</h2>
+                    <p id="projectDescription" style="color: #666; margin-top: 10px;">Project Description</p>
+                    <div class="project-meta" id="projectMeta">
+                        <!-- Dynamic meta data -->
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid" id="statsGrid">
+                    <!-- Dynamic stats -->
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="project-card">
+                <div class="timeline-section">
+                    <div class="timeline-header">
+                        <h3>📜 Complete Transaction History</h3>
+                        <span id="totalTransactions" style="color: #666; font-size: 14px;"></span>
+                    </div>
+                    <div class="timeline" id="timeline">
+                        <!-- Dynamic timeline items -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Login -->
+        <div style="text-align: center;">
+            <a href="index.html" class="back-link">← back to login portal</a>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000';
+
+        async function searchProject() {
+            const projectId = document.getElementById('projectIdInput').value.trim();
+            
+            if (!projectId) {
+                showError('please enter a project ID');
+                return;
+            }
+
+            hideError();
+            hideResults();
+            showLoading();
+
+            try {
+                // Fetch complete project history from all channels
+                const response = await fetch(`${API_BASE}/api/history/complete/${projectId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`project not found: ${projectId}`);
+                }
+
+                const data = await response.json();
+                
+                hideLoading();
+                displayResults(data);
+            } catch (error) {
+                hideLoading();
+                showError(error.message);
+                console.error('error fetching project:', error);
+            }
+        }
+
+        function displayResults(data) {
+            // Display project header
+            document.getElementById('projectName').textContent = data.project.name || data.project.projectId;
+            document.getElementById('projectDescription').textContent = data.project.description || 'No description available';
+
+            // Display meta data
+            const metaHtml = `
+                <div class="meta-item">
+                    <span class="meta-label">Project ID:</span>
+                    <span class="meta-value">${data.project.projectId}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Status:</span>
+                    <span class="status-badge status-${data.project.status}">${data.project.status}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Total Value:</span>
+                    <span class="meta-value">₹${formatCurrency(data.project.totalValue)}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Employer:</span>
+                    <span class="meta-value">${formatOrg(data.project.employer)}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Contractor:</span>
+                    <span class="meta-value">${formatOrg(data.project.contractor)}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Created:</span>
+                    <span class="meta-value">${formatDate(data.project.createdAt)}</span>
+                </div>
+            `;
+            document.getElementById('projectMeta').innerHTML = metaHtml;
+
+            // Display stats
+            const statsHtml = `
+                <div class="stat-card">
+                    <div class="stat-number">${data.summary.totalTransactions}</div>
+                    <div class="stat-label">Total Transactions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${data.summary.channelsInvolved}</div>
+                    <div class="stat-label">Channels Involved</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${data.project.milestones?.length || 0}</div>
+                    <div class="stat-label">Milestones</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${data.project.payments?.length || 0}</div>
+                    <div class="stat-label">Payments</div>
+                </div>
+            `;
+            document.getElementById('statsGrid').innerHTML = statsHtml;
+
+            // Display timeline
+            document.getElementById('totalTransactions').textContent = 
+                `${data.summary.totalTransactions} blockchain transactions`;
+
+            const timelineHtml = data.timeline.map(tx => {
+                const channelClass = tx.channel.replace('channel', 'channel-');
+                return `
+                    <div class="timeline-item">
+                        <div class="timeline-timestamp">${formatTimestamp(tx.timestamp)}</div>
+                        <div class="timeline-action">
+                            ${tx.action}
+                            <span class="channel-badge ${channelClass}">${tx.channel.toUpperCase()}</span>
+                        </div>
+                        <div class="timeline-actor">
+                            <strong>Actor:</strong> ${formatOrg(tx.actor || 'System')}
+                        </div>
+                        ${tx.details ? `
+                            <div class="timeline-details">
+                                <strong>Transaction Details:</strong>
+                                <pre>${JSON.stringify(tx.details, null, 2)}</pre>
+                            </div>
+                        ` : ''}
+                        <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                            📦 Block: ${tx.blockNumber || 'N/A'} | 
+                            🆔 TxID: ${tx.txId ? tx.txId.substring(0, 16) + '...' : 'N/A'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('timeline').innerHTML = timelineHtml || 
+                '<p style="text-align: center; color: #999;">No transaction history available</p>';
+
+            showResults();
+        }
+
+        function formatCurrency(value) {
+            if (!value) return '0';
+            return new Intl.NumberFormat('en-IN').format(value);
+        }
+
+        function formatOrg(org) {
+            if (!org) return 'N/A';
+            return org.replace('MSP', '').replace('Not Assigned', 'Not Assigned');
+        }
+
+        function formatDate(date) {
+            if (!date) return 'N/A';
+            return new Date(date).toLocaleDateString('en-IN', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return 'Unknown time';
+            const date = new Date(timestamp);
+            return date.toLocaleString('en-IN', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        function showLoading() {
+            document.getElementById('loading').classList.add('show');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('show');
+        }
+
+        function showResults() {
+            document.getElementById('results').classList.add('show');
+        }
+
+        function hideResults() {
+            document.getElementById('results').classList.remove('show');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = '❌ ' + message;
+            errorDiv.classList.add('show');
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+
+        // Check if projectId is in URL
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const projectId = urlParams.get('projectId');
+            if (projectId) {
+                document.getElementById('projectIdInput').value = projectId;
+                searchProject();
+            }
+        });
+    </script>
+</body>
+</html>
