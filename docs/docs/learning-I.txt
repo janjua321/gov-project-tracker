@@ -1,0 +1,24 @@
+./network.sh deployCC -ccn basic -ccp ../asset-transfer-basic/chaincode-javascript/ -ccl javascript
+asset-transfer-basic sample chaincode is a smart contract designed to manage basic assets on the ledger. 
+its primary purpose is to demonstrate the fundamental operations of a smart contract in Hyperledger Fabric.
+
+export PATH=${PWD}/../bin:$PATH
+export FABRIC_CFG_PATH=$PWD/../config/
+export CORE_PEER_TLS_ENABLED=true
+export CORE_PEER_LOCALMSPID="Org1MSP"
+export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+export CORE_PEER_ADDRESS=localhost:7051
+
+What You've Done
+by running these commands, you have essentially told your terminal session:
+Which User You Are: You are acting as the Admin user of Org1 (CORE_PEER_MSPCONFIGPATH).
+Which Peer to Talk To: You are connecting to peer0.org1.example.com at the address localhost:7051 (CORE_PEER_ADDRESS).
+How to Connect Securely: You are using a secure TLS connection and have provided the necessary root certificate to verify the peer's identity (CORE_PEER_TLS_ENABLED and CORE_PEER_TLS_ROOTCERT_FILE).
+Where to Find Tools and Configs: You've added the Fabric binaries to your PATH and set the location for configuration files (PATH and FABRIC_CFG_PATH).
+
+creates a new asset 
+peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile "${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem" -C mychannel -n basic --peerAddresses localhost:7051 --tlsRootCertFiles "${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt" --peerAddresses localhost:9051 --tlsRootCertFiles "${PWD}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt" -c '{"function":"CreateAsset","Args":["asset7","blue","20","Tom","85"]}'
+
+outputs all assets
+peer chaincode query -C mychannel -n basic -c '{"Args":["GetAllAssets"]}'

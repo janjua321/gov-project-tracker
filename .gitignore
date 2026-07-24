@@ -24,3 +24,8 @@ fabric-network/test-network/*.tx
 
 # VSCode
 .vscode/
+
+network/packages/
+network/crypto-config/
+network/channel-artifacts/
+*.tar.gz
